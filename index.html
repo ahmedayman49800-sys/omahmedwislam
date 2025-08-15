@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -35,7 +35,7 @@ footer {background:linear-gradient(90deg,#ff8a00,#e52e71);color:white;text-align
       <img alt="" height="1075" src="wr3%20.jpg" width="775">
     <div class="card-content">
       <div class="product-name">ورق عنب</div>
-      <div class="price">1 ر.س للحبّة</div>
+      <div class="price">1.5 ر.س للحبّة</div>
       <div class="qty"><input type="number" id="waraqEnab" min="0" max="20" value="0"></div>
     </div>
   </div>
@@ -107,7 +107,7 @@ function updateTotal(){
     const waraqMalfoof=parseInt(document.getElementById("waraqMalfoof").value)||0;
     const mashakel=parseInt(document.getElementById("mashakel").value)||0;
     const deliveryOption=document.getElementById("deliveryOption").value;
-    let subtotal=(waraqEnab*1)+(waraqMalfoof*1)+(mashakel*3);
+    let subtotal=(waraqEnab*1.5)+(waraqMalfoof*1)+(mashakel*3);
     if(deliveryOption==="delivery") subtotal+=15;
     document.getElementById("totalAmount").innerText=subtotal+" ر.س";
 }
