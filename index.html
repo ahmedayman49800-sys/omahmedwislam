@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍴 OmAhmedFood — أكل بيت أم أحمد</title>
+<style>
+body { font-family:'Tahoma',sans-serif; background:#fff8f0; margin:0; padding:0; color:#333;}
+header {background:linear-gradient(90deg,#ff8a00,#e52e71);color:white;padding:20px;text-align:center;font-size:1.8em;font-weight:bold;box-shadow:0 4px 8px rgba(0,0,0,0.1);}
+.container {max-width:1100px;margin:auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
+.card {background:white;border-radius:15px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;flex-direction:column;transition: transform 0.2s;}
+.card:hover {transform: translateY(-3px);}
+.card img {width:100%;height:180px;object-fit:cover;}
+.card-content {padding:15px;flex-grow:1;}
+.product-name {font-size:1.2em;font-weight:bold;margin-bottom:10px;}
+.price {color:#e52e71;font-weight:bold;font-size:1.1em;}
+.qty, .mixed-breakdown, .recipient, .location-field {margin-top:10px;display:flex;flex-direction:column;gap:5px;}
+select, input, button {outline:none;}
+.footer-controls {grid-column:1 / -1;text-align:center;margin-top:20px;}
+.total {font-size:1.4em;font-weight:bold;color:#e52e71;margin-top:10px;}
+.btn {display:inline-block;background:linear-gradient(90deg,#ff8a00,#e52e71);color:white;padding:12px 20px;border-radius:10px;font-size:1em;border:none;cursor:pointer;margin-top:15px;transition:0.3s;}
+.btn:hover {transform: scale(1.05);}
+footer {background:linear-gradient(90deg,#ff8a00,#e52e71);color:white;text-align:center;padding:15px;margin-top:30px;}
+.hidden {display:none;}
+.mixed-label {font-weight:bold;}
+</style>
+</head>
+<body>
+
+<header>🍴 OmAhmedFood — أكل بيت أم أحمد</header>
+
+<div class="container">
+  <!-- ورق عنب -->
+  <div class="card">
+      <img alt="" height="1075" src="wr3%20.jpg" width="775">
+    <div class="card-content">
+      <div class="product-name">ورق عنب</div>
+      <div class="price">1 ر.س للحبّة</div>
+      <div class="qty"><input type="number" id="waraqEnab" min="0" max="20" value="0"></div>
+    </div>
+  </div>
+
+  <!-- ورق ملفوف -->
+  <div class="card">
+      <img src="mlfoof.jpg" alt="ورق ملفوف">
+    <div class="card-content">
+      <div class="product-name">ورق ملفوف</div>
+      <div class="price">1 ر.س للحبّة</div>
+      <div class="qty"><input type="number" id="waraqMalfoof" min="0" max="20" value="0"></div>
+    </div>
+  </div>
+
+  <!-- مشكل -->
+  <div class="card">
+      <img src="mshkl.jpg" alt="مشكل">
+    <div class="card-content">
+      <div class="product-name">مشكل (فلفل، كوسة، باذنجان)</div>
+      <div class="price">3 ر.س للحبّة</div>
+      <div class="qty">
+        <input type="number" id="mashakel" min="0" max="20" value="0" onchange="updateMixedOptions()">
+      </div>
+      <div class="mixed-breakdown hidden" id="mixedBreakdown">
+        <label class="mixed-label">فلفل:</label>
+        <select id="mashakelFelfl"></select>
+        <label class="mixed-label">كوسة:</label>
+        <select id="mashakelKosa"></select>
+        <label class="mixed-label">باذنجان:</label>
+        <select id="mashakelBatenjan"></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- طريقة الاستلام -->
+  <div class="card">
+    <div class="card-content">
+      <div class="product-name">طريقة الاستلام</div>
+      <select id="deliveryOption" onchange="toggleLocation()">
+        <option value="pickup">استلام ذاتي (بدون رسوم)</option>
+        <option value="delivery">توصيل (+15 ر.س)</option>
+      </select>
+      <div class="location-field hidden" id="locationField">
+        <input type="text" id="deliveryLocation" placeholder="أدخل عنوان التوصيل (فقط في الجبيل)">
+      </div>
+    </div>
+  </div>
+
+  <!-- اسم المستلم -->
+  <div class="card">
+    <div class="card-content recipient">
+      <input type="text" id="recipientName" placeholder="اسم المستلم">
+    </div>
+  </div>
+
+  <div class="footer-controls">
+    <div class="total">الإجمالي: <span id="totalAmount">0 ر.س</span></div>
+    <button class="btn" id="verifyOrderBtn">مراجعة الطلب — Verify Order</button>
+  </div>
+</div>
+
+<footer>
+📞 للتواصل: 0530524375 — الدفع كاش أو حوالة بنكية / STC Pay
+</footer>
+
+<script>
+function updateTotal(){
+    const waraqEnab=parseInt(document.getElementById("waraqEnab").value)||0;
+    const waraqMalfoof=parseInt(document.getElementById("waraqMalfoof").value)||0;
+    const mashakel=parseInt(document.getElementById("mashakel").value)||0;
+    const deliveryOption=document.getElementById("deliveryOption").value;
+    let subtotal=(waraqEnab*1)+(waraqMalfoof*1)+(mashakel*3);
+    if(deliveryOption==="delivery") subtotal+=15;
+    document.getElementById("totalAmount").innerText=subtotal+" ر.س";
+}
+
+function toggleLocation(){
+    const deliveryOption=document.getElementById("deliveryOption").value;
+    document.getElementById("locationField").style.display=deliveryOption==="delivery"?"flex":"none";
+    updateTotal();
+}
+
+function updateMixedOptions(){
+    const qty=parseInt(document.getElementById("mashakel").value)||0;
+    const breakdown=document.getElementById("mixedBreakdown");
+    breakdown.classList.toggle("hidden", qty===0);
+
+    const felfl=document.getElementById("mashakelFelfl");
+    const kosa=document.getElementById("mashakelKosa");
+    const batenjan=document.getElementById("mashakelBatenjan");
+
+    [felfl,kosa,batenjan].forEach(s=>{s.disabled=qty===0; populateOptions(s, qty); s.value="0";});
+    
+    [felfl,kosa,batenjan].forEach(s=>s.addEventListener("change", updateDependentOptions));
+    updateDependentOptions();
+}
+
+function populateOptions(selectElement, max){
+    selectElement.innerHTML="";
+    for(let i=0;i<=max;i++){ selectElement.innerHTML+=`<option value="${i}">${i}</option>`;}
+}
+
+function updateDependentOptions(){
+    const total=parseInt(document.getElementById("mashakel").value)||0;
+    let f=parseInt(document.getElementById("mashakelFelfl").value)||0;
+    let k=parseInt(document.getElementById("mashakelKosa").value)||0;
+    let b=parseInt(document.getElementById("mashakelBatenjan").value)||0;
+
+    adjustOptions(document.getElementById("mashakelFelfl"), total - k - b, f);
+    adjustOptions(document.getElementById("mashakelKosa"), total - f - b, k);
+    adjustOptions(document.getElementById("mashakelBatenjan"), total - f - k, b);
+}
+
+function adjustOptions(selectElement, max, current){
+    const oldValue=current;
+    selectElement.innerHTML="";
+    for(let i=0;i<=max;i++){ selectElement.innerHTML+=`<option value="${i}">${i}</option>`;}
+    selectElement.value=Math.min(oldValue,max);
+}
+
+// ✅ Final WhatsApp-friendly message
+document.getElementById("verifyOrderBtn").addEventListener("click", function(){
+    const waraqEnab=parseInt(document.getElementById("waraqEnab").value)||0;
+    const waraqMalfoof=parseInt(document.getElementById("waraqMalfoof").value)||0;
+    const mashakel=parseInt(document.getElementById("mashakel").value)||0;
+    const felfl=parseInt(document.getElementById("mashakelFelfl").value)||0;
+    const kosa=parseInt(document.getElementById("mashakelKosa").value)||0;
+    const batenjan=parseInt(document.getElementById("mashakelBatenjan").value)||0;
+    const deliveryOption=document.getElementById("deliveryOption").value;
+    const location=deliveryOption==="delivery"?document.getElementById("deliveryLocation").value:"استلام ذاتي";
+    const name=document.getElementById("recipientName").value.trim();
+
+    if(!name){alert("الرجاء إدخال اسم المستلم"); return;}
+    if(deliveryOption==="delivery" && location.trim()===""){alert("الرجاء إدخال عنوان التوصيل"); return;}
+
+    const total=document.getElementById("totalAmount").innerText;
+
+    let lines = [`🍴 طلب جديد من OmAhmedFood`,
+                 `اسم المستلم: ${name}`];
+
+    if(waraqEnab>0) lines.push(`ورق عنب — ${waraqEnab} حبّة`);
+    if(waraqMalfoof>0) lines.push(`ورق ملفوف — ${waraqMalfoof} حبّة`);
+    if(mashakel>0){
+        lines.push(`مشكل — ${mashakel} حبّة`);
+        lines.push(`  فلفل: ${felfl}`);
+        lines.push(`  كوسة: ${kosa}`);
+        lines.push(`  باذنجان: ${batenjan}`);
+    }
+
+    lines.push(`طريقة الاستلام: ${deliveryOption==="delivery"?"توصيل":"استلام ذاتي"}`);
+    if(deliveryOption==="delivery") lines.push(`العنوان: ${location} (فقط في الجبيل)`);
+    lines.push(deliveryOption==="delivery"?"الدفع: حوالة بنكية / STC Pay عند التوصيل":"الدفع: نقداً عند الاستلام");
+    lines.push(`الإجمالي: ${total}`);
+    lines.push(`📞 يرجى إرسال هذا الطلب`);
+
+    const finalText = encodeURIComponent(lines.join("\n"));
+    window.location.href="https://wa.me/966530524375?text="+finalText;
+});
+
+document.querySelectorAll('input[type=number], select').forEach(el=>{el.addEventListener("input",updateTotal); el.addEventListener("change",updateTotal);});
+updateTotal(); updateMixedOptions(); toggleLocation();
+</script>
+
+</body>
+</html>
